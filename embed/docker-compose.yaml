@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+    netapp-ai:
+        image: netapp-ai:latest
+        environment:
+            - ENV_REGION=us-east-1
+            - ENV_OPEN_SEARCH_SERVERLESS_COLLECTION_NAME=rag
+        volumes:
+            - /tmp/data:/opt/netapp/ai/data
+            - /tmp/db:/opt/netapp/ai/db

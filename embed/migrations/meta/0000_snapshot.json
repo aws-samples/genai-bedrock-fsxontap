@@ -1,0 +1,128 @@
+{
+    "version": "6",
+    "dialect": "sqlite",
+    "id": "c058302c-8273-47ab-9850-5ab07aee5c90",
+    "prevId": "00000000-0000-0000-0000-000000000000",
+    "tables": {
+        "documents": {
+            "name": "documents",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "integer",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": true
+                },
+                "opensearch_id": {
+                    "name": "opensearch_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "file_id": {
+                    "name": "file_id",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {
+                "documents_opensearch_id_unique": {
+                    "name": "documents_opensearch_id_unique",
+                    "columns": ["opensearch_id"],
+                    "isUnique": true
+                },
+                "opensearch_id_idx": {
+                    "name": "opensearch_id_idx",
+                    "columns": ["opensearch_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "documents_file_id_files_id_fk": {
+                    "name": "documents_file_id_files_id_fk",
+                    "tableFrom": "documents",
+                    "tableTo": "files",
+                    "columnsFrom": ["file_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        },
+        "files": {
+            "name": "files",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "integer",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": true
+                },
+                "scan_id": {
+                    "name": "scan_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "ino": {
+                    "name": "ino",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "mtime_ms": {
+                    "name": "mtime_ms",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "ctime_ms": {
+                    "name": "ctime_ms",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {
+                "files_ino_unique": {
+                    "name": "files_ino_unique",
+                    "columns": ["ino"],
+                    "isUnique": true
+                },
+                "ino_idx": {
+                    "name": "ino_idx",
+                    "columns": ["ino"],
+                    "isUnique": false
+                },
+                "scan_id_idx": {
+                    "name": "scan_id_idx",
+                    "columns": ["scan_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        }
+    },
+    "enums": {},
+    "_meta": {
+        "schemas": {},
+        "tables": {},
+        "columns": {}
+    },
+    "internal": {
+        "indexes": {}
+    }
+}
