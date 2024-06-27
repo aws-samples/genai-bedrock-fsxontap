@@ -52,7 +52,7 @@ This process can take 15–20 minutes to complete.
 Use the _ad_host_ instance to share sample data and set user permissions that will then be seamlessly used to populate the index on AOSS by the solution’s Embedding container component. Perform the following steps to mount your Amazon FSx for ONTAP storage virtual machine data volume as a network drive, upload data to this shared network drive and set permissions based on Windows ACLs:
 
 1. Navigate to Systems Manager Fleet Manager on your AWS console, locate the  _ad_host_ instance and [follow instructions here](https://docs.aws.amazon.com/systems-manager/latest/userguide/fleet-rdp.html#fleet-rdp-connect-to-node) to login with Remote Desktop. Use the domain admin user _bedrock-01\\Admin_ and your _AD host password_ obtained from the Terraform output
-2. Mount FSxN data volume as a network drive. Navigate to FSx on your AWS console, click on **Volumes**, select the *bedrockrag* volume and obtain values for the SVM ID and Volume name parameters. Under **This PC** right click **Network** and then **Map Network drive.** Choose drive letter and use the FSxN share path for the mount (\\\\&lt;SVM ID&gt;.&lt;brsvm.bedrock-01.com&gt;\\c$\\&lt;Volume name&gt;)
+2. Mount FSxN data volume as a network drive. Navigate to FSx on your AWS console, click on **Volumes**, select the *bedrockrag* volume and obtain values for the SVM ID and Volume name parameters. Under **This PC** right click **Network** and then **Map Network drive.** Choose drive letter and use the FSxN share path for the mount (\\\\&lt;SVM ID&gt;.brsvm.bedrock-01.com\\c$\\&lt;Volume name&gt;)
 3. Upload the [Bedrock user guide](https://docs.aws.amazon.com/pdfs/bedrock/latest/userguide/bedrock-ug.pdf) to the shared network drive and set permissions to the Admin user only (ensure that you **Disable inheritance** under **Advanced settings**)
 4. Upload the [FSx ONTAP user guide](https://docs.aws.amazon.com/pdfs/fsx/latest/ONTAPGuide/ONTAPGuide.pdf#getting-started) to the shared drive and ensure permissions are set to Everyone
 5. On the _ad_host_ server open the command prompt and type the following command to obtain the SID for the Admin user:
@@ -66,7 +66,7 @@ Mount and run the Embeddings container to periodically populate an index in the 
 
 1. Navigate to Systems Manager Fleet Manager on your AWS console, locate the  _embedding_host_ instance, click the **Node actions** button and select **Start terminal session** to login to the _embedding_host_
 
-2. Mount and start the Embeddings Container. Navigate to FSx ONTAP on your AWS console and click on **Storage Virtual Machines** and obtain values for the SVM ID and File System ID parameters. Navigate to Amazon Elastic Container Registry on your AWS console and click on **Repositories** and obtain the value of the URI for the fsxnragembed image name
+2. Mount and start the Embeddings Container. Navigate to FSx ONTAP on your AWS console and click on **Storage Virtual Machines** and obtain values for the SVM ID and File System ID parameters. Navigate to Amazon Elastic Container Registry on your AWS console and click on **Repositories** and obtain the value of the URI parameter for the fsxnragembed image name
 
 ```
 sudo mount -t nfs <SVM ID>.<File system ID>:/ragdb /tmp/db
@@ -99,4 +99,6 @@ curl -v '<https://9ng1jjn8qi.execute-api.us-east-1.amazonaws.com/prod/bedrock_ra
 To avoid recurring charges, and to clean up your account after trying the solution outlined in this post, perform the following steps:
 
 1. From the _terraform_ folder, delete the Terraform template for the solution:
-    - _terraform apply --destroy_
+```
+terraform apply --destroy
+```
