@@ -14,6 +14,7 @@ The solution implements a RAG Retrieval Lambda function that enables a RAG scena
 The user interacts with the solution by submitting a natural language prompt either via a chatbot application or directly via the Amazon API Gateway API interface. The chatbot application container is built using streamlit and fronted by an AWS Application Load Balancer(ALB). When a user submits a natural language prompt to the chatbot UI via the ALB, the chatbot container interacts with API Gateway interface that then invokes the RAG Retrieval Lambda function to fetch the response for the user. The user can also directly submit prompt requests to the Amazon API Gateway API and obtain a response. We currently demonstrate permissions-based access to the RAG documents by explicitly retrieving the SID of a user and then using that SID in the chatbot or API Gateway request where the Retrieval lambda then matches the SID to the Windows ACLs configured for the document. In general, as a future enhancement, you may want to authenticate the user against an Identity Provider and then match the user against the permissions configured for the documents.
 
 The following diagram illustrates the end-to-end flow for our solution. We start by configuring data sharing and ACLs with FSx for NetApp ONTAP and then these are periodically scanned by the Embeddings container. The Embeddings container splits the documents into chunks and uses the Amazon Titan Embeddings model to create vector embeddings from these chunks. It then stores these vector embeddings with associated metadata in our AOSS vector database by populating an index in a vector collection in AOSS.
+
 ![Embedding Flow](/images/flow-arch.png)
 
 Here’s the overall reference architecture diagram that illustrates the various components of this solution working together
@@ -32,14 +33,14 @@ Cloning the repository and using the Terraform template will provision all the c
 
 1. Clone the repository for this solution:
 ```
-- sudo yum install -y unzip
-- git clone [git@github.com:aws-samples/genai-bedrock-fsxontap.git](git@github.com:aws-samples/genai-bedrock-fsxontap.git)
-- cd terraform
+sudo yum install -y unzip
+git clone git@github.com:aws-samples/genai-bedrock-fsxontap.git
+cd genai-bedrock-fsxontap/terraform
 ```
 2. From the _terraform_ folder, deploy the entire solution using terraform:
 ```
-    - terraform init
-    - terraform apply -auto-approve
+terraform init
+terraform apply -auto-approve
 ```
 This process can take 15–20 minutes to complete.
 
@@ -47,15 +48,27 @@ This process can take 15–20 minutes to complete.
 
 #### Load data and set permissions
 
-In order to test the solution, use the _ad_host_ instance to share sample data and set user permissions that will then be seamlessly used to populate the index on AOSS by the solution’s Embedding container component. Perform the following steps to mount your Amazon FSx for ONTAP storage virtual machine data volume as a network drive, upload data to this shared network drive and set permissions based on Windows ACLs:
+Use the _ad_host_ instance to share sample data and set user permissions that will then be seamlessly used to populate the index on AOSS by the solution’s Embedding container component. Perform the following steps to mount your Amazon FSx for ONTAP storage virtual machine data volume as a network drive, upload data to this shared network drive and set permissions based on Windows ACLs:
 
-1. Obtain the _ad_host_ instance DNS from the output of your Terraform template. Login into the _ad_host_ instance using remote desktop. Use the domain admin user _bedrock-01\\Admin_ and your _randomly generated password_.
-2. Mount FSxN data volume as a network drive. Under **This PC** right click **Network** and then **Map Network drive.** Choose drive letter and use the FSxN share path for the mount (\\\\&lt;svm&gt;.&lt;domain &gt;\\c$\\&lt;volume-name&gt;)
+1. Navigate to Systems Manager Fleet Manager on your AWS console, locate the  _ad_host_ instance and [follow instructions here](https://docs.aws.amazon.com/systems-manager/latest/userguide/fleet-rdp.html#fleet-rdp-connect-to-node) to login with Remote Desktop. Use the domain admin user _bedrock-01\\Admin_ and your _AD host password_ obtained from the Terraform output
+2. Mount FSxN data volume as a network drive. Under **This PC** right click **Network** and then **Map Network drive.** Choose drive letter and use the FSxN share path for the mount (\\\\&lt;SVM ID&gt;.&lt;Fully qualified domain name&gt;\\c$\\&lt;volume-name&gt;)
 3. Upload the [Bedrock user guide](https://docs.aws.amazon.com/pdfs/bedrock/latest/userguide/bedrock-ug.pdf) to the shared network drive and set permissions to the Admin user only (ensure that you **Disable inheritance** under **Advanced settings**)
 4. Upload the [FSx ONTAP user guide](https://docs.aws.amazon.com/pdfs/fsx/latest/ONTAPGuide/ONTAPGuide.pdf#getting-started) to the shared drive and ensure permissions are set to Everyone
 5. On the _ad_host_ server open the command prompt and type the following command to obtain the SID for the Admin user:
     - _wmic useraccount where name='Admin' get sid_
 
+#### Start periodic migration of FSxN data to AOSS
+
+Mount and run the Embeddings container to periodically populate an index in the AOSS vector search collection with existing files and folders along with their security access control list (ACL) configurations from the FSx for ONTAP file system.
+
+1. Navigate to Systems Manager Fleet Manager on your AWS console, locate the  _embedding_host_ instance, click the **Node actions** button and select **Start terminal session** to login to the _embedding_host_
+
+2. Mount and start the Embeddings Container. Navigate to FSx ONTAP on your AWS console and click on **Storage Virtual Machines** and obtain values for the SVM ID and File System ID parameters. Navigate to Amazon Elastic Container Registry on your AWS console and click on **Repositories** and obtain the value of the URI for the fsxnragembed image name
+
+```
+sudo mount -t nfs <SVM ID>.<File system ID>:/ragdb /tmp/db
+sudo docker run -d -v /tmp/data:/opt/netapp/ai/data -v /tmp/db:/opt/netapp/ai/db -e ENV_REGION=<AWS_REGION> -e ENV_OPEN_SEARCH_SERVERLESS_COLLECTION_NAME=fsxnragvector <URI for fsxnragembed image>
+```
 #### Test permissions-based RAG scenario with Bedrock and FSx for ONTAP
 
 ##### Use the Chatbot
