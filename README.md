@@ -7,17 +7,16 @@
 
 The solution provisions a multi-AZ deployment of the FSx for ONTAP filesystem with a storage virtual machine (SVM) joined to an AWS Managed Microsoft AD domain. An Amazon OpenSearch Serverless(AOSS) vector search collection provides scalable and high performing similarity search capability. We use an Amazon EC2 Windows server as an SMB/CIFS client to the FSx for ONTAP volume and configure data sharing and ACLs for the SMB shares in the volume. We use this data and ACLs to test permissions-based access to the embeddings in a RAG scenario with Bedrock.
 
-The Embeddings container component of our solution deployed on an Amazon EC2 Linux server uses a CIFS share to access the FSx for ONTAP volume and periodically migrates existing files and folders along with their security access control list (ACL) configurations to AOSS by populating an index in the AOSS vector search collection with this company specific data (and associated metadata and ACLs) from the SMB share on FSx for ONTAP file system.
+The Embeddings container component of our solution that is deployed on an Amazon EC2 Linux server and mounted as an NFS client on the FSx for ONTAP volume, periodically migrates existing files and folders along with their security access control list (ACL) configurations to AOSS. It populates an index in the AOSS vector search collection with this company specific data (and associated metadata and ACLs) from the NFS share on the FSx for ONTAP file system.
 
-The solution implements a RAG Retrieval Lambda function that enables a RAG scenario with Amazon Bedrock by enriching the Generative AI prompt using Bedrock APIs with your company-specific data and associated metadata (including ACLs) retrieved from the OpenSearch Serverless index that was populated by the Embeddings container component described above. The RAG Retrieval Lambda function stores conversation history for the user interaction in an Amazon DynamoDB table.
+The solution implements a RAG Retrieval Lambda function that enables a RAG scenario with Amazon Bedrock by enriching the Generative AI prompt using Bedrock APIs with your company-specific data and associated metadata (including ACLs) retrieved from the Amazon OpenSearch Serverless index that was populated by the Embeddings container component described above. The RAG Retrieval Lambda function also stores conversation history for the user interaction in an Amazon DynamoDB table.
 
-The user interacts with the solution by submitting a natural language prompt either via a chatbot application or directly via the Amazon API Gateway API interface. The chatbot application container is built using streamlit and fronted by an [AWS Application Load Balancer(ALB). When a user submits a natural language prompt to the chatbot UI via the ALB, the chatbot container interacts with API Gateway interface that then invokes the RAG Retrieval Lambda function to fetch the response for the user. The user can also directly submit prompt requests to the Amazon API Gateway API and obtain a response. We currently demonstrate permissions-based access to the RAG documents by explicitly retrieving the SID of a user and then using that SID in the chatbot or API Gateway request where the Retrieval lambda then matches the SID to the Windows ACLs configured for the document. In general, as a future enhancement, you may want to authenticate the user against an Identity Provider and then match the user against the permissions configured for the documents.
+The user interacts with the solution by submitting a natural language prompt either via a chatbot application or directly via the Amazon API Gateway API interface. The chatbot application container is built using streamlit and fronted by an AWS Application Load Balancer(ALB). When a user submits a natural language prompt to the chatbot UI via the ALB, the chatbot container interacts with API Gateway interface that then invokes the RAG Retrieval Lambda function to fetch the response for the user. The user can also directly submit prompt requests to the Amazon API Gateway API and obtain a response. We currently demonstrate permissions-based access to the RAG documents by explicitly retrieving the SID of a user and then using that SID in the chatbot or API Gateway request where the Retrieval lambda then matches the SID to the Windows ACLs configured for the document. In general, as a future enhancement, you may want to authenticate the user against an Identity Provider and then match the user against the permissions configured for the documents.
 
-The following diagram illustrates the end-to-end flow for our solution. We start by configuring data sharing and ACLs with FSxN and then these are periodically scanned by the Embeddings container. The Embeddings container splits the documents into chunks and uses the Amazon Titan Embeddings model to create vector embeddings from these chunks. It then stores these vector embeddings with associated metadata in our AOSS vector database by populating an index in a vector collection in AOSS.
-
+The following diagram illustrates the end-to-end flow for our solution. We start by configuring data sharing and ACLs with FSx for NetApp ONTAP and then these are periodically scanned by the Embeddings container. The Embeddings container splits the documents into chunks and uses the Amazon Titan Embeddings model to create vector embeddings from these chunks. It then stores these vector embeddings with associated metadata in our AOSS vector database by populating an index in a vector collection in AOSS.
 ![Embedding Flow](/images/flow-arch.png)
-Here’s the architecture diagram that illustrates the various components of our solution working together
 
+Here’s the overall reference architecture diagram that illustrates the various components of this solution working together
 ![Reference Architecture](/images/solution-arch.png)
 
 ### Prerequisites
@@ -31,17 +30,16 @@ Here’s the architecture diagram that illustrates the various components of our
 
 Cloning the repository and using the Terraform template will provision all the components with their required configurations as described in the solution overview section.
 
-
 1. Clone the repository for this solution:
 ```
-- _sudo yum install -y unzip_
-- _git clone_ [_git@github.com:aws-samples/genai-bedrock-fsxontap.git_](git@github.com:aws-samples/genai-bedrock-fsxontap.git)
-- _cd terraform_
+- sudo yum install -y unzip
+- git clone [git@github.com:aws-samples/genai-bedrock-fsxontap.git](git@github.com:aws-samples/genai-bedrock-fsxontap.git)
+- cd terraform
 ```
 2. From the _terraform_ folder, deploy the entire solution using terraform:
 ```
-    - _terraform init_
-    - _terraform apply -auto-approve_
+    - terraform init
+    - terraform apply -auto-approve
 ```
 This process can take 15–20 minutes to complete.
 
