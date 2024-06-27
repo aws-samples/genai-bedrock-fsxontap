@@ -3,7 +3,7 @@
 1. Integrate Amazon FSx for NetApp ONTAP with Amazon Bedrock to build Retrieval Augmented Generation (RAG) based generative AI applications by bringing company-specific, unstructured user file data from FSx for NetApp ONTAP for your RAG applications.
 2. Leverage Windows and Linux based file ownership-based access control operations to provide a permissions-based RAG experience for your users.
 
-### How it works
+### Solution Overview
 
 The solution provisions a multi-AZ deployment of the FSx for ONTAP filesystem with a storage virtual machine (SVM) joined to an AWS Managed Microsoft AD domain. An Amazon OpenSearch Serverless(AOSS) vector search collection provides scalable and high performing similarity search capability. We use an Amazon EC2 Windows server as an SMB/CIFS client to the FSx for ONTAP volume and configure data sharing and ACLs for the SMB shares in the volume. We use this data and ACLs to test permissions-based access to the embeddings in a RAG scenario with Bedrock.
 
@@ -18,6 +18,7 @@ The following diagram illustrates the end-to-end flow for our solution. We start
 ![Embedding Flow](/images/flow-arch.png)
 
 Here’s the overall reference architecture diagram that illustrates the various components of this solution working together
+
 ![Reference Architecture](/images/solution-arch.png)
 
 ### Prerequisites
@@ -51,11 +52,13 @@ This process can take 15–20 minutes to complete.
 Use the _ad_host_ instance to share sample data and set user permissions that will then be seamlessly used to populate the index on AOSS by the solution’s Embedding container component. Perform the following steps to mount your Amazon FSx for ONTAP storage virtual machine data volume as a network drive, upload data to this shared network drive and set permissions based on Windows ACLs:
 
 1. Navigate to Systems Manager Fleet Manager on your AWS console, locate the  _ad_host_ instance and [follow instructions here](https://docs.aws.amazon.com/systems-manager/latest/userguide/fleet-rdp.html#fleet-rdp-connect-to-node) to login with Remote Desktop. Use the domain admin user _bedrock-01\\Admin_ and your _AD host password_ obtained from the Terraform output
-2. Mount FSxN data volume as a network drive. Under **This PC** right click **Network** and then **Map Network drive.** Choose drive letter and use the FSxN share path for the mount (\\\\&lt;SVM ID&gt;.&lt;Fully qualified domain name&gt;\\c$\\&lt;volume-name&gt;)
+2. Mount FSxN data volume as a network drive. Navigate to FSx on your AWS console, click on **Volumes**, select the *bedrockrag* volume and obtain values for the SVM ID and Volume name parameters. Under **This PC** right click **Network** and then **Map Network drive.** Choose drive letter and use the FSxN share path for the mount (\\\\&lt;SVM ID&gt;.&lt;brsvm.bedrock-01.com&gt;\\c$\\&lt;Volume name&gt;)
 3. Upload the [Bedrock user guide](https://docs.aws.amazon.com/pdfs/bedrock/latest/userguide/bedrock-ug.pdf) to the shared network drive and set permissions to the Admin user only (ensure that you **Disable inheritance** under **Advanced settings**)
 4. Upload the [FSx ONTAP user guide](https://docs.aws.amazon.com/pdfs/fsx/latest/ONTAPGuide/ONTAPGuide.pdf#getting-started) to the shared drive and ensure permissions are set to Everyone
 5. On the _ad_host_ server open the command prompt and type the following command to obtain the SID for the Admin user:
-    - _wmic useraccount where name='Admin' get sid_
+```
+wmic useraccount where name='Admin' get sid
+```
 
 #### Start periodic migration of FSxN data to AOSS
 
