@@ -1,6 +1,6 @@
-## Build RAG based generative AI applications in AWS by integrating Amazon Bedrock with Amazon FSx for NetApp ONTAP
+## Build RAG based generative AI applications in AWS using Amazon FSx for NetApp ONTAP with Amazon Bedrock
 
-1. Integrate Amazon FSx for NetApp ONTAP with Amazon Bedrock to build Retrieval Augmented Generation (RAG) based generative AI applications by bringing company-specific, unstructured user file data from FSx for NetApp ONTAP for your RAG applications.
+1. Use Amazon FSx for NetApp ONTAP with Amazon Bedrock to build Retrieval Augmented Generation (RAG) based generative AI applications by bringing company-specific, unstructured user file data from FSx for NetApp ONTAP for your RAG applications.
 2. Leverage Windows and Linux based file ownership-based access control operations to provide a permissions-based RAG experience for your users.
 
 ### Solution Overview
@@ -80,20 +80,21 @@ Obtain the _lb-dns-name_ URL from the output of your Terraform template and acce
 
 For the prompt query, ask any general question on the FSxN user guide that is available for access to everyone. You will see a response in the chat window as well as the source attribution used by the model for the response.
 
-Now let’s ask a question about the Bedrock user guide that has access restricted to the Admin user. You can see the model doesn’t know how to answer questions related to this query. Use the Admin SID on the User (SID) filter search in the chat UI and ask the same question again in the prompt. You will now see a response in the chat window as well as the source attribution used by the model for the response.
+Now ask a question about the Bedrock user guide that has access restricted to the Admin user. You can see the model will not return an answer related to this query. Use the Admin SID on the User (SID) filter search in the chat UI and ask the same question again in the prompt. You will now see a response in the chat window as well as the source attribution used by the model for the response.
 
 ##### Query using API Gateway
 
-You can also query the model directly using API Gateway. Here’s the curl request you can use for invoking API Gateway:
+You can also query the model directly using API Gateway. Obtain the *api-invoke-url* parameter from the output of your Terraform template
+
+1. Here’s the curl request you can use for invoking API Gateway with *Everyone* access for a query related to the FSxN user guide. Note that the value of the *metadata* parameter is set to *NA* to indicate *Everyone* access. 
 ```
-curl -v '<https://9ng1jjn8qi.execute-api.us-east-1.amazonaws.com/prod/bedrock_rag_retreival>' \\
-
-\-X POST \\
-
-\-H 'content-type: application/json' \\
-
-\-d '{"session_id": "1","prompt": "who is moses?", "bedrock_model_id": "anthropic.claude-v2:1", "model_kwargs": {"temperature": 1.0, "top_p": 1.0, "top_k": 500, "max_tokens_to_sample": 1024}, "metadata": "S-1-5-21-4037439088-1296877785-2872080499-1112", "memory_window": 10}'
+curl -v '<api-invoke-url>/bedrock_rag_retreival' -X POST -H 'content-type: application/json' -d '{"session_id": "1","prompt": "What is an FSxN ONTAP filesystem?", "bedrock_model_id": "anthropic.claude-v2:1", "model_kwargs": {"temperature": 1.0, "top_p": 1.0, "top_k": 500}, "metadata": "NA", "memory_window": 10}'
 ```
+2. Here’s the curl request you can use for invoking API Gateway with *Admin* access for a query related to the Bedrock user guide. Note that the value of the *metadata* parameter is set to the *SID* of the Admin user to indicate *Admin* access.
+```
+curl -v '<api-invoke-url>/bedrock_rag_retreival' -X POST -H 'content-type: application/json' -d '{"session_id": "1","prompt": "what is bedrock?", "bedrock_model_id": "anthropic.claude-v2:1", "model_kwargs": {"temperature": 1.0, "top_p": 1.0, "top_k": 500}, "metadata": "S-1-5-21-4037439088-1296877785-2872080499-1112", "memory_window": 10}'
+```
+
 ### Clean up
 
 To avoid recurring charges, and to clean up your account after trying the solution outlined in this post, perform the following steps:
