@@ -88,11 +88,11 @@ You can also query the model directly using API Gateway. Obtain the *api-invoke-
 
 1. Here’s the curl request you can use for invoking API Gateway with *Everyone* access for a query related to the FSxN user guide. Note that the value of the *metadata* parameter is set to *NA* to indicate *Everyone* access. 
 ```
-curl -v '<api-invoke-url>/bedrock_rag_retreival' -X POST -H 'content-type: application/json' -d '{"session_id": "1","prompt": "What is an FSxN ONTAP filesystem?", "bedrock_model_id": "anthropic.claude-v2:1", "model_kwargs": {"temperature": 1.0, "top_p": 1.0, "top_k": 500}, "metadata": "NA", "memory_window": 10}'
+curl -v '<api-invoke-url>/bedrock_rag_retreival' -X POST -H 'content-type: application/json' -d '{"session_id": "1","prompt": "What is an FSxN ONTAP filesystem?", "bedrock_model_id": "anthropic.claude-3-sonnet-20240229-v1:0", "model_kwargs": {"temperature": 1.0, "top_p": 1.0, "top_k": 500}, "metadata": "NA", "memory_window": 10}'
 ```
-2. Here’s the curl request you can use for invoking API Gateway with *Admin* access for a query related to the Bedrock user guide. Note that the value of the *metadata* parameter is set to the *SID* of the Admin user to indicate *Admin* access.
+2. Here’s the curl request you can use for invoking API Gateway with *Admin* access for a query related to the Bedrock user guide. Note that the value of the *metadata* parameter is set to the *SID* of the Admin user.
 ```
-curl -v '<api-invoke-url>/bedrock_rag_retreival' -X POST -H 'content-type: application/json' -d '{"session_id": "1","prompt": "what is bedrock?", "bedrock_model_id": "anthropic.claude-v2:1", "model_kwargs": {"temperature": 1.0, "top_p": 1.0, "top_k": 500}, "metadata": "S-1-5-21-4037439088-1296877785-2872080499-1112", "memory_window": 10}'
+curl -v '<api-invoke-url>/bedrock_rag_retreival' -X POST -H 'content-type: application/json' -d '{"session_id": "1","prompt": "what is bedrock?", "bedrock_model_id": "anthropic.claude-3-sonnet-20240229-v1:0", "model_kwargs": {"temperature": 1.0, "top_p": 1.0, "top_k": 500}, "metadata": "S-1-5-21-4037439088-1296877785-2872080499-1112", "memory_window": 10}'
 ```
 
 ### Clean up
