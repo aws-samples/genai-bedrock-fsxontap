@@ -5,6 +5,10 @@
 
 ### Solution Overview
 
+The solution uses an FSx for ONTAP filesystem as the source of unstructured data and continuously populates an Amazon OpenSearch Serverless (AOSS) vector database with the user’s existing files and folders and associated metadata.  This enables a RAG scenario with Amazon Bedrock by enriching the generative AI prompt using Bedrock APIs with your company-specific data retrieved from the OpenSearch Serverless vector database. 
+
+The solution also leverages FSx for ONTAP to allow users to extend their current data security and access mechanisms to augment model responses from Bedrock. It uses FSx for ONTAP as the source of associated metadata, specifically the user’s security access control list (ACL) configurations attached to their files and folders and populates that metadata into AOSS. By combining access control operations with file events that notify the RAG application of new and changed data on the file system, we demonstrate how FSx for NetApp ONTAP enables Bedrock to only use embeddings from authorized files for the specific users that connect to our generative AI application.
+
 The solution provisions a multi-AZ deployment of the FSx for ONTAP filesystem with a storage virtual machine (SVM) joined to an AWS Managed Microsoft AD domain. An Amazon OpenSearch Serverless(AOSS) vector search collection provides scalable and high performing similarity search capability. We use an Amazon EC2 Windows server as an SMB/CIFS client to the FSx for ONTAP volume and configure data sharing and ACLs for the SMB shares in the volume. We use this data and ACLs to test permissions-based access to the embeddings in a RAG scenario with Bedrock.
 
 The Embeddings container component of our solution that is deployed on an Amazon EC2 Linux server and mounted as an NFS client on the FSx for ONTAP volume, periodically migrates existing files and folders along with their security access control list (ACL) configurations to AOSS. It populates an index in the AOSS vector search collection with this company specific data (and associated metadata and ACLs) from the NFS share on the FSx for ONTAP file system.
