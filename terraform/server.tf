@@ -102,6 +102,5 @@ resource "aws_instance" "embedding_host" {
     sudo aws ecr get-login-password --region ${var.aws_region} | sudo docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com
     sudo docker run -d -v /tmp/data:/opt/netapp/ai/data -v /tmp/db:/opt/netapp/ai/db -e ENV_REGION='${var.aws_region}' -e ENV_OPEN_SEARCH_SERVERLESS_COLLECTION_NAME='${aws_opensearchserverless_collection.fsxnragvector.name}' ${aws_ecr_repository.fsxnragembed.repository_url}:latest 
     sudo docker run -d -p 8501:8501 -e CHAT_URL='${aws_api_gateway_stage.stage.invoke_url}/${aws_api_gateway_resource.root.path_part}' ${aws_ecr_repository.fsxnragchat.repository_url}:latest
-    sudo docker pause $(sudo docker ps -f ancestor=${aws_ecr_repository.fsxnragembed.repository_url}:latest -q)
   EOF
 }
