@@ -39,7 +39,7 @@ Cloning the repository and using the Terraform template will provision all the c
 1. Clone the repository for this solution:
 ```
 sudo yum install -y unzip
-git clone git@github.com:aws-samples/genai-bedrock-fsxontap.git
+git clone https://github.com/aws-samples/genai-bedrock-fsxontap.git
 cd genai-bedrock-fsxontap/terraform
 ```
 2. From the _terraform_ folder, deploy the entire solution using terraform:
@@ -70,12 +70,16 @@ Mount and run the Embeddings container to periodically populate an index in the 
 
 1. Navigate to Systems Manager Fleet Manager on your AWS console, locate the  _embedding_host_ instance, click the **Node actions** button and select **Start terminal session** to login to the _embedding_host_
 
-2. Mount and start the Embeddings Container. Navigate to FSx ONTAP on your AWS console and click on **Storage Virtual Machines** and obtain values for the SVM ID and File System ID parameters. Navigate to Amazon Elastic Container Registry on your AWS console and click on **Repositories** and obtain the value of the URI parameter for the fsxnragembed image name
-
-```
-sudo mount -t nfs <SVM ID>.<File system ID>:/ragdb /tmp/db
-sudo docker run -d -v /tmp/data:/opt/netapp/ai/data -v /tmp/db:/opt/netapp/ai/db -e ENV_REGION=<AWS_REGION> -e ENV_OPEN_SEARCH_SERVERLESS_COLLECTION_NAME=fsxnragvector <URI for fsxnragembed image>
-```
+> Optional: If Embedding container fails because of FSxN storage mount makse sure you mount and start the Embeddings Container. 
+>
+> 1. Navigate to FSx ONTAP on your AWS console and click on **Storage Virtual Machines** and obtain values for the SVM ID and File System ID parameters. 
+> 2. Navigate to Amazon Elastic Container Registry on your AWS console and click on **Repositories** and obtain the value of the URI parameter for the fsxnragembed image name.
+> 3. Run the following:  
+>
+>```
+>sudo mount -t nfs <SVM ID>.<File system ID>:/ragdb /tmp/db
+>sudo docker run -d -v /tmp/data:/opt/netapp/ai/data -v /tmp/db:/opt/netapp/ai/db -e ENV_REGION=<AWS_REGION> -e ENV_OPEN_SEARCH_SERVERLESS_COLLECTION_NAME=fsxnragvector <URI for fsxnragembed image>
+>```
 #### Test permissions-based RAG scenario with Bedrock and FSx for ONTAP
 
 ##### Use the Chatbot
