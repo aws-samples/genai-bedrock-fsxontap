@@ -36,6 +36,7 @@ resource "docker_image" "lambda-image" {
     context = "../lambda"
     tag = ["${aws_ecr_repository.fsxnragvector.repository_url}:latest"]
     platform = "linux/amd64"
+    no_cache = true
   }
 }
 
@@ -47,6 +48,7 @@ resource "docker_image" "embed-image" {
     context = "../embed"
     tag = ["${aws_ecr_repository.fsxnragembed.repository_url}:latest"]
     platform = "linux/amd64"
+    no_cache = true
   }
 }
 
@@ -57,6 +59,7 @@ resource "docker_image" "chat-image" {
     context = "../chatapp"
     tag = ["${aws_ecr_repository.fsxnragchat.repository_url}:latest"]
     platform = "linux/amd64"
+    no_cache = true
   }
 }
 # push image to ecr repo
