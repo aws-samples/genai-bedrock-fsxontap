@@ -63,3 +63,33 @@ resource "aws_api_gateway_stage" "stage" {
   stage_name    = "prod"
 }
 
+
+resource "aws_api_gateway_rest_api_policy" "bedrock_lambda_api_policy" {
+  rest_api_id = aws_api_gateway_rest_api.bedrock_lambda.id
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "execute-api:Invoke",
+            "Resource": [
+                "execute-api:/*"
+            ]
+        },
+        {
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "execute-api:Invoke",
+            "Resource": [
+                "execute-api:/*"
+            ],
+            "Condition" : {
+                "StringNotEquals": {
+                   "aws:SourceVpc": module.vpc.vpc_id
+                }
+            }
+        }
+    ]
+})
+}

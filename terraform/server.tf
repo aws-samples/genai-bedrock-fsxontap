@@ -42,25 +42,48 @@ resource "aws_iam_role_policy" "ec2_embedding_policy" {
   policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
-        {
-            "Sid": "VisualEditor0",
-            "Effect": "Allow",
-            "Action": [
-                "aoss:APIAccessAll",
-                "aoss:BatchGetCollection",
-                "aoss:CreateAccessPolicy",
-                "aoss:CreateSecurityPolicy",
-                "sts:GetCallerIdentity",
-                "bedrock:GetFoundationModel",
-                "bedrock:InvokeModel",
-                "aoss:ListCollections",
-                "aoss:CreateCollection",
-                "ecr:GetAuthorizationToken",
-                "ecr:BatchGetImage",
-                "ecr:GetDownloadUrlForLayer"
+      {
+        "Action": [
+          "aoss:APIAccessAll",
+          "aoss:CreateAccessPolicy",
+          "aoss:CreateSecurityPolicy",
+          "aoss:CreateCollection"
+        ],
+        "Effect": "Allow",
+        "Resource": "arn:aws:aoss:${var.aws_region}:${data.aws_caller_identity.current.account_id}:collection/${aws_opensearchserverless_collection.fsxnragvector.id}",
+        "Sid": "aoss"
+      },
+      {
+        "Sid": "bedrock",
+        "Effect": "Allow",
+        "Action": [
+          "bedrock:GetFoundationModel",
+          "bedrock:InvokeModel"
+        ],
+        "Resource": ["arn:aws:bedrock:${var.aws_region}::foundation-model/*"]
+      },
+      {
+        "Sid": "ecr",
+        "Effect": "Allow",
+        "Action": [
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer"
+        ],
+        "Resource": ["arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${aws_ecr_repository.fsxnragembed.name}",
+                     "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${aws_ecr_repository.fsxnragvector.name}",
+                     "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${aws_ecr_repository.fsxnragchat.name}"]  
+      },
+      {
+        "Sid": "sts",
+        "Effect": "Allow",
+        "Action": [
+            "aoss:ListCollections",
+            "aoss:BatchGetCollection",
+            "ecr:GetAuthorizationToken",
+            "sts:GetCallerIdentity"
             ],
-            "Resource": "*"
-        }
+        "Resource": ["*"]
+      }
     ]
     })
 }

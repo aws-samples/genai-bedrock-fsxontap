@@ -3,18 +3,30 @@ resource "aws_ecr_repository" "fsxnragvector" {
   name                 = "fsxnragvector"
   image_tag_mutability = "MUTABLE"
   force_delete = true
+  
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_ecr_repository" "fsxnragembed" {
   name                 = "fsxnragembed"
   image_tag_mutability = "MUTABLE"
   force_delete = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_ecr_repository" "fsxnragchat" {
   name                 = "fsxnragchat"
   image_tag_mutability = "MUTABLE"
   force_delete = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 data "aws_ecr_authorization_token" "token" {}
