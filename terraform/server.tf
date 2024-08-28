@@ -105,6 +105,10 @@ resource "aws_instance" "embedding_host" {
   security_groups = [aws_security_group.fsx_sg.id]
   iam_instance_profile = aws_iam_instance_profile.embedding_profile.name
 
+  metadata_options {
+    http_tokens = "required"
+  }
+  
   tags = {
     Project = "bedrockfsxn"
     Name   = "embedding_host"
