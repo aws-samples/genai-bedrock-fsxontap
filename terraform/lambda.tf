@@ -30,40 +30,35 @@ resource "aws_iam_role_policy" "lambda_bedrock_rag_retreival_policy" {
             "Sid": "Bedrock",
             "Effect": "Allow",
             "Action": [
-                "bedrock:*"
+				"bedrock:GetFoundationModel",
+				"bedrock:InvokeModel",
+				"bedrock:InvokeModelWithResponseStream"
             ],
             "Resource": [
-                "*"
+                "arn:aws:bedrock:${var.aws_region}::foundation-model/*"
             ]
         },
         {
             "Sid": "OpensearchServerless",
             "Effect": "Allow",
             "Action": [
-                "aoss:*"
+				"aoss:APIAccessAll"
             ],
             "Resource": [
-                "*"
-            ]
-        },
-        {
-            "Sid": "Opensearch",
-            "Effect": "Allow",
-            "Action": [
-                "es:*"
-            ],
-            "Resource": [
-                "*"
+                "arn:aws:aoss:${var.aws_region}:${data.aws_caller_identity.current.account_id}:collection/${aws_opensearchserverless_collection.fsxnragvector.id}"
             ]
         },
         {
             "Sid": "DynamoDB",
             "Effect": "Allow",
             "Action": [
-                "dynamodb:*"
+				"dynamodb:ListTables",
+				"dynamodb:GetItem",
+				"dynamodb:PutItem",
+				"dynamodb:UpdateItem"
             ],
             "Resource": [
-                "*"
+                "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.session-table.name}"
             ]
         }
     ]

@@ -1,9 +1,27 @@
 
 provider "aws" {
   region = var.aws_region
+
+  default_tags {
+    tags = local.tags
+  }
 }
 
-data "aws_availability_zones" "available" {}
+locals {
+  tags = {
+    project = "genai-bedrock-fsxontap"
+    owner       = "aws"
+  }
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
+
+  filter {
+    name   = "group-name"
+    values = [var.aws_region]
+  }
+}
 
 
 resource "random_string" "suffix" {

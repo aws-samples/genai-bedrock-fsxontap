@@ -10,8 +10,8 @@ output "fsx-management-ip" {
   value = aws_fsx_ontap_file_system.bedrockfs.endpoints[0].management[0].ip_addresses
 }
 
-output "fsx-password" {
-  value = random_string.fsx_password.result
+output "fsx-secret-id" {
+  value = aws_secretsmanager_secret.fsxn_password_secret.id
 }
 
 output "fsx-svm-smb-dns-name" {

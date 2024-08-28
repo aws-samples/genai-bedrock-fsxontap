@@ -9,6 +9,7 @@ resource "aws_directory_service_directory" "bedrockad" {
     vpc_id     = module.vpc.vpc_id
     subnet_ids = module.vpc.private_subnets
   }
+  
 
   tags = {
     Project = "bedrockfsxn"
@@ -68,6 +69,10 @@ resource "aws_instance" "ad_host" {
   security_groups = [aws_security_group.fsx_sg.id]
   iam_instance_profile = aws_iam_instance_profile.ad_profile.name
 
+  metadata_options {
+    http_tokens = "required"
+  }
+  
   tags = {
     Project = "bedrockfsxn"
     Name   = "ad_host"
