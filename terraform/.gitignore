@@ -35,3 +35,4 @@ override.tf.json
 terraform.rc
 # OSX trash
 .DS_Store
+*.pem 

@@ -60,7 +60,7 @@ resource "aws_iam_role_policy" "ec2_embedding_policy" {
           "bedrock:GetFoundationModel",
           "bedrock:InvokeModel"
         ],
-        "Resource": ["arn:aws:bedrock:${var.aws_region}::foundation-model/*"]
+        "Resource": ["arn:aws:bedrock:${var.aws_region}::foundation-model/amazon.titan-embed-text-v2:0"]
       },
       {
         "Sid": "ecr",
@@ -107,6 +107,8 @@ resource "aws_instance" "embedding_host" {
 
   metadata_options {
     http_tokens = "required"
+    http_put_response_hop_limit = 2
+    http_endpoint = "enabled"
   }
   
   tags = {

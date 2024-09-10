@@ -1,6 +1,6 @@
 models:
-  Claude 2:
-    model_id: "anthropic.claude-v2:1"
+  Claude 3 Sonnet:
+    model_id: "anthropic.claude-3-sonnet-20240229-v1:0"
     input_format: "list_of_dicts"
     temperature: 1.0
     top_p: 1.0
@@ -8,8 +8,8 @@ models:
     max_tokens: 1024
     memory_window: 10
     max_top_k: 500
-  Claude 3 Sonnet:
-    model_id: "anthropic.claude-3-sonnet-20240229-v1:0"
+  Claude 2:
+    model_id: "anthropic.claude-v2:1"
     input_format: "list_of_dicts"
     temperature: 1.0
     top_p: 1.0
