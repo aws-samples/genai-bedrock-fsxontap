@@ -5,8 +5,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     software-properties-common \
     git \
-    && rm -rf /var/lib/apt/lists/* && \
-    addgroup --gid 8000 streamlit && \
+    && rm -rf /var/lib/apt/lists/* 
+
+RUN addgroup --gid 8000 streamlit && \
     adduser --uid 8000 --gid 8000 --disabled-password --gecos "" streamlit
 
 USER streamlit
