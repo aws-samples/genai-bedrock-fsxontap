@@ -84,7 +84,8 @@ resource "aws_lambda_function" "bedrock_rag_retreival" {
 
   environment {
     variables = {
-      aoss_host = aws_opensearchserverless_collection.fsxnragvector.collection_endpoint
+      aoss_host = aws_opensearchserverless_collection.fsxnragvector.collection_endpoint,
+      region = var.aws_region
     }
   }
 }
