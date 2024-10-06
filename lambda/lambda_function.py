@@ -52,7 +52,7 @@ def lambda_handler(event, context):
             'body': "Invalid input. os_host is empty."
         }
     
-    region = os.environ.get('AWS_REGION', 'us-east-1')  # Default to us-east-1 if AWS_REGION is not set
+    region = os.environ.get('region', 'us-east-1')  # Default to us-east-1 if AWS_REGION is not set
 
     # TODO implement
     conversation = init_conversationchain(session_id, region, bedrock_model_id,model_kwargs, metadata, memory_window, os_host)
@@ -137,6 +137,7 @@ def init_conversationchain(session_id,region, bedrock_model_id, model_kwargs, me
     llm = BedrockChat(
         model_id=bedrock_model_id,
         model_kwargs=model_kwargs,
+        client = bedrock_client,
         streaming=True
     )
 
