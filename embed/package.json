@@ -31,7 +31,7 @@
         "@aws-sdk/client-bedrock-runtime": "^3.637.0",
         "@aws-sdk/client-opensearchserverless": "^3.637.0",
         "@aws-sdk/credential-provider-node": "^3.637.0",
-        "@langchain/community": "^0.2.31",
+        "@langchain/community": "^0.3.10",
         "@opensearch-project/opensearch": "^2.11.0",
         "better-sqlite3": "^11.2.1",
         "dotenv": "^16.4.5",
