@@ -9,9 +9,9 @@ RUN microdnf install make -y
 RUN microdnf install gcc -y
 RUN microdnf install gcc-c++ -y
 
-ENV NODE_VERSION 22.2.0
+ENV NODE_VERSION 23.1.0
 
-RUN curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s latest
+RUN curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s $NODE_VERSION
 
 ADD package.json ./
 ADD package-lock.json ./
