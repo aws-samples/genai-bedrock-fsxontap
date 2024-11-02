@@ -1,17 +1,9 @@
-FROM rockylinux:9.3-minimal
+FROM node:23.1.0-slim
 
 WORKDIR /opt/netapp/ai
 
-RUN microdnf install xz -y
-RUN microdnf install cifs-utils -y
-RUN microdnf install tar -y
-RUN microdnf install make -y
-RUN microdnf install gcc -y
-RUN microdnf install gcc-c++ -y
-
-ENV NODE_VERSION 23.1.0
-
-RUN curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s $NODE_VERSION
+RUN apt-get update
+RUN apt-get install -y cifs-utils --no-install-recommends
 
 ADD package.json ./
 ADD package-lock.json ./
