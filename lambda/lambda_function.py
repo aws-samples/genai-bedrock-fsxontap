@@ -21,6 +21,7 @@ def lambda_handler(event, context):
         }
     
     prompt = event["prompt"]
+    #bedrock_model_id = event["bedrock_model_id"]
     bedrock_model_id = event["bedrock_model_id"]
     model_kwargs = event["model_kwargs"]
     metadata = event["metadata"]
